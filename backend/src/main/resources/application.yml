@@ -1,0 +1,25 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: launchstack-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:launchstack}}
+    username: ${SPRING_DATASOURCE_USERNAME:${POSTGRES_USER:launchstack}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${POSTGRES_PASSWORD:launchstack}}
+  flyway:
+    enabled: ${SPRING_FLYWAY_ENABLED:false}
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    db:
+      enabled: false
