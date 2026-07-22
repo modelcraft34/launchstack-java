@@ -1,3 +1,10 @@
+.env
+.idea/
+.vscode/
+*.iml
+*.log
+.DS_Store
+Thumbs.db
 backend/target/
 frontend/node_modules/
 frontend/dist/
