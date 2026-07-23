@@ -53,6 +53,8 @@ Backend defaults:
 
 - datasource values come from `.env` / environment variables
 - Flyway is enabled by default for local development
+- auth token settings come from `JWT_SECRET`, `JWT_ACCESS_TOKEN_EXPIRATION`, `JWT_REFRESH_TOKEN_EXPIRATION`
+- optional local admin seed uses `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`
 - Swagger UI is exposed at `http://localhost:8080/swagger-ui.html`
 - readiness is exposed at `http://localhost:8080/actuator/health/readiness`
 
@@ -67,12 +69,19 @@ npm run build
 
 ## Status
 
-Sprint 1 adds backend foundation only: PostgreSQL datasource configuration, Flyway baseline wiring, OpenAPI/Swagger, reusable API responses, centralized exception handling, validation error formatting, and audit base fields.
+Sprint 2 adds backend auth core:
+
+- user, role, and refresh token persistence
+- register, login, refresh, logout, and `/api/auth/me` endpoints
+- BCrypt password hashing
+- JWT access token generation and validation
+- stateless Spring Security with JWT filter
+- idempotent seed roles/admin support via environment variables
 
 Intentionally not implemented yet:
 
-- authentication flows (register/login/logout)
-- JWT access token generation
-- refresh token persistence/rotation
-- user and role entities, repositories, and business APIs
+- email verification
+- forgot/reset password
+- user management admin APIs beyond auth core
+- frontend auth screens and feature UI
 - payment, multi-tenancy, notifications, file upload, and other advanced product features
