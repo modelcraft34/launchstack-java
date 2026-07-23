@@ -10,6 +10,11 @@ spring:
     hibernate:
       ddl-auto: none
 
+jwt:
+  secret: test-secret-for-jwt-signing-in-tests
+  access-token-expiration: 900
+  refresh-token-expiration: 7200
+
 management:
   health:
     db:

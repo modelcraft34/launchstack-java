@@ -25,6 +25,11 @@ spring:
     problemdetails:
       enabled: false
 
+jwt:
+  secret: ${JWT_SECRET:change-me-before-production}
+  access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900}
+  refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
