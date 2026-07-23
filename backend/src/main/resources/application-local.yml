@@ -17,4 +17,5 @@ spring:
 management:
   health:
     db:
+      # Keep readiness simple for the in-memory local profile; H2 lifecycle is tied to the app process.
       enabled: false
