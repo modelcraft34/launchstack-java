@@ -15,6 +15,7 @@ spring:
       minimum-idle: ${SPRING_DATASOURCE_MINIMUM_IDLE:2}
       connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:30000}
   flyway:
+    # Sprint 1 enables Flyway by default for local development; review this flag per environment if needed.
     enabled: ${SPRING_FLYWAY_ENABLED:true}
   jpa:
     open-in-view: false

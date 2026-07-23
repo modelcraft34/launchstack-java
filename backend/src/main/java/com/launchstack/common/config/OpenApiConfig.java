@@ -5,6 +5,9 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configures the base OpenAPI metadata and Swagger UI exposure for the backend.
+ */
 @Configuration
 public class OpenApiConfig {
 
