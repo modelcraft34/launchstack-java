@@ -122,9 +122,8 @@ class LocalProfileIntegrationTest {
 
     @Test
     void seedAdminCredentialsWorkWithLocalProfile() {
-        User seededAdmin = userRepository.findByEmail("admin@launchstack.local").orElseGet(() -> {
-            throw new AssertionError("Expected local profile admin seed user to exist");
-        });
+        User seededAdmin = userRepository.findByEmail("admin@launchstack.local")
+                .orElseThrow(() -> new AssertionError("Expected local profile admin seed user to exist"));
 
         assertThat(seededAdmin.isEnabled()).isTrue();
         assertThat(seededAdmin.getRoles())
