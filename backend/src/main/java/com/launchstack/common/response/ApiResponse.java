@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Standard response wrapper for backend API responses.
+ *
+ * <p>Successful responses can carry data, while error responses can carry a message and
+ * structured validation details.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class ApiResponse<T> {
 
