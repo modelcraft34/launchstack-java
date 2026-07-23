@@ -20,14 +20,14 @@ LaunchStack Java is a production-oriented Spring Boot + Angular SaaS/Admin Start
 - Maven 3.9+
 - Node.js 20+
 - npm 10+
-- Docker and Docker Compose
-- PostgreSQL 16 (or Dockerized PostgreSQL)
+- Docker and Docker Compose for the default PostgreSQL-based stack
+- PostgreSQL 16 if you want to run the default profile outside Docker
 
 ## Quick Start
 
-1. Copy `.env.example` to `.env` and adjust values for your environment.
-2. Start PostgreSQL and the app stack with Docker Compose.
-3. Flyway runs automatically on backend startup.
+1. Default profile: copy `.env.example` to `.env` and start the PostgreSQL-backed stack with Docker Compose.
+2. Local profile: run the backend directly with the `local` profile to use in-memory H2 without Docker or PostgreSQL.
+3. Flyway runs automatically in both profiles.
 4. Open Swagger UI locally once the backend is running.
 
 See `docs/getting-started.md` for the backend setup details.
@@ -41,6 +41,21 @@ cp .env.example .env
 docker compose up --build
 ```
 
+### Backend without Docker or PostgreSQL
+
+IntelliJ run configuration:
+
+- Main class: `com.launchstack.LaunchStackApplication`
+- Active profile: `local`
+- Java SDK: `17`
+
+Command line:
+
+```bash
+cd backend
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
 ### Backend
 
 ```bash
@@ -51,12 +66,43 @@ mvn test
 
 Backend defaults:
 
-- datasource values come from `.env` / environment variables
-- Flyway is enabled by default for local development
+- default profile datasource values come from `.env` / environment variables for PostgreSQL / Docker
+- `local` profile switches to in-memory H2 for Docker-free local development
+- Flyway is enabled in both the default and `local` profiles
 - auth token settings come from `JWT_SECRET`, `JWT_ACCESS_TOKEN_EXPIRATION`, `JWT_REFRESH_TOKEN_EXPIRATION`
 - optional local admin seed uses `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`
 - Swagger UI is exposed at `http://localhost:8080/swagger-ui.html`
+- H2 Console is exposed at `http://localhost:8080/h2-console` when the `local` profile is active
 - readiness is exposed at `http://localhost:8080/actuator/health/readiness`
+
+H2 console connection details for the `local` profile:
+
+- JDBC URL: `jdbc:h2:mem:launchstack`
+- Username: `sa`
+- Password: leave blank
+
+You can manually test auth locally in the `local` profile with curl:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local-user@launchstack.dev","password":"Password123!","firstName":"Local","lastName":"Tester"}'
+
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local-user@launchstack.dev","password":"Password123!"}'
+
+curl -X POST http://localhost:8080/api/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<refresh-token>"}'
+
+curl -X POST http://localhost:8080/api/auth/logout \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<refresh-token>"}'
+
+curl http://localhost:8080/api/auth/me \
+  -H "Authorization: ******"
+```
 
 ### Frontend
 
@@ -77,6 +123,12 @@ Sprint 2 adds backend auth core:
 - JWT access token generation and validation
 - stateless Spring Security with JWT filter
 - idempotent seed roles/admin support via environment variables
+
+Developer-experience update before Sprint 3:
+
+- default `application.yml` remains PostgreSQL-first
+- new `local` profile uses H2 in PostgreSQL compatibility mode
+- H2 console is enabled only in the `local` profile for IntelliJ / CLI local testing
 
 Intentionally not implemented yet:
 
