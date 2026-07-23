@@ -26,10 +26,11 @@ LaunchStack Java is a production-oriented Spring Boot + Angular SaaS/Admin Start
 ## Quick Start
 
 1. Copy `.env.example` to `.env` and adjust values for your environment.
-2. Start the local stack with Docker Compose.
-3. Run backend and frontend commands listed below when working outside containers.
+2. Start PostgreSQL and the app stack with Docker Compose.
+3. Flyway runs automatically on backend startup.
+4. Open Swagger UI locally once the backend is running.
 
-Detailed setup documentation will be expanded in later sprints.
+See `docs/getting-started.md` for the backend setup details.
 
 ## Commands
 
@@ -48,6 +49,13 @@ mvn spring-boot:run
 mvn test
 ```
 
+Backend defaults:
+
+- datasource values come from `.env` / environment variables
+- Flyway is enabled by default for local development
+- Swagger UI is exposed at `http://localhost:8080/swagger-ui.html`
+- readiness is exposed at `http://localhost:8080/actuator/health/readiness`
+
 ### Frontend
 
 ```bash
@@ -59,4 +67,12 @@ npm run build
 
 ## Status
 
-Sprint 0 provides repository scaffolding only. Authentication, business modules, payment, multi-tenancy, notifications, file upload, and other advanced product features are intentionally not implemented yet.
+Sprint 1 adds backend foundation only: PostgreSQL datasource configuration, Flyway baseline wiring, OpenAPI/Swagger, reusable API responses, centralized exception handling, validation error formatting, and audit base fields.
+
+Intentionally not implemented yet:
+
+- authentication flows (register/login/logout)
+- JWT access token generation
+- refresh token persistence/rotation
+- user and role entities, repositories, and business APIs
+- payment, multi-tenancy, notifications, file upload, and other advanced product features
