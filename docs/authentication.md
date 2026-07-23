@@ -6,7 +6,7 @@ Sprint 2 implements the backend authentication core with register/login/refresh/
 
 Set these environment variables (see `.env.example`):
 
-- `JWT_SECRET`
+- `JWT_SECRET` (at least 32 characters for HS256)
 - `JWT_ACCESS_TOKEN_EXPIRATION` (seconds, default `900`)
 - `JWT_REFRESH_TOKEN_EXPIRATION` (seconds, default `1209600`)
 - `SEED_ADMIN_EMAIL`

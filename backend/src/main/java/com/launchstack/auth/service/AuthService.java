@@ -17,10 +17,11 @@ import com.launchstack.role.RoleRepository;
 import com.launchstack.user.entity.User;
 import com.launchstack.user.repository.UserRepository;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.security.SecureRandom;
 import java.util.Set;
-import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(
             UserRepository userRepository,
@@ -68,7 +70,7 @@ public class AuthService {
         return issueTokenPair(savedUser);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public TokenResponse login(LoginRequest request) {
         String normalizedEmail = normalizeEmail(request.email());
         User user = userRepository.findByEmail(normalizedEmail)
@@ -153,7 +155,7 @@ public class AuthService {
     private TokenResponse issueTokenPair(User user) {
         String accessToken = jwtTokenService.generateAccessToken(user);
         RefreshToken refreshToken = new RefreshToken(
-                UUID.randomUUID().toString(),
+                generateRefreshTokenValue(),
                 user,
                 Instant.now().plusSeconds(jwtTokenService.getRefreshTokenExpirationSeconds()));
         RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
@@ -172,5 +174,11 @@ public class AuthService {
 
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String generateRefreshTokenValue() {
+        byte[] tokenBytes = new byte[48];
+        secureRandom.nextBytes(tokenBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
     }
 }

@@ -6,9 +6,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -59,11 +58,10 @@ public class JwtTokenService {
 
     private SecretKey createSigningKey(String secret) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] keyBytes = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
-            return Keys.hmacShaKeyFor(keyBytes);
-        } catch (NoSuchAlgorithmException exception) {
-            throw new IllegalStateException("Unable to initialize JWT signing key", exception);
+            return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        } catch (WeakKeyException exception) {
+            throw new IllegalStateException(
+                    "JWT secret must be at least 32 characters for HS256 signing.", exception);
         }
     }
 }

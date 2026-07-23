@@ -1,5 +1,6 @@
 package com.launchstack.auth.security;
 
+import com.launchstack.role.Role;
 import com.launchstack.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +24,7 @@ public class LaunchStackUserDetailsService implements UserDetailsService {
                         .password(user.getPasswordHash())
                         .disabled(!user.isEnabled())
                         .accountLocked(!user.isAccountNonLocked())
-                        .authorities(user.getRoles().stream().map(role -> role.getName()).toArray(String[]::new))
+                        .authorities(user.getRoles().stream().map(Role::getName).toArray(String[]::new))
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }

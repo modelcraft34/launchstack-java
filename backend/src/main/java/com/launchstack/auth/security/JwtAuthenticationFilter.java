@@ -5,6 +5,8 @@ import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtTokenService jwtTokenService;
 
@@ -54,7 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(principal, token, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-        } catch (JwtException ignored) {
+        } catch (JwtException exception) {
+            LOGGER.debug("JWT validation failed: {}", exception.getMessage());
             SecurityContextHolder.clearContext();
         }
 
