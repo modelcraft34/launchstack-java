@@ -106,9 +106,19 @@ Rate limiting is intentionally not implemented in Sprint 3 and should be added a
 4. Marks reset token as used.
 5. Revokes active refresh tokens for that user.
 
-## Current user flow
+## Current user flow (`/api/auth/me`)
 
 `GET /api/auth/me`
 
 - Requires Authorization header with a valid JWT access token.
 - Returns id/email/name/roles for current user.
+
+## Profile endpoints (`/api/me`)
+
+Sprint 4 adds a profile-focused endpoint pair alongside `/api/auth/me`:
+
+- `GET /api/me` — returns current user profile from the same authenticated principal context.
+- `PUT /api/me` — allows updating only `firstName` and `lastName`.
+
+`/api/auth/me` remains available for backward compatibility with previous sprint behavior.
+Users cannot change their own roles, enabled flag, or lock status through `/api/me`.
