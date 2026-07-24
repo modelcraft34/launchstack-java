@@ -135,11 +135,14 @@ npm run build
 
 ## Status
 
-Sprint 3 extends backend auth/account lifecycle:
+Sprint 4 extends backend authorization and user management:
 
 - user, role, and refresh token persistence
 - register, login, refresh, logout, and `/api/auth/me` endpoints
 - `/api/auth/verify-email`, `/api/auth/resend-verification`, `/api/auth/forgot-password`, `/api/auth/reset-password`
+- admin-only user management APIs: `/api/users`, `/api/users/{id}`, `/api/users/{id}/status`
+- admin-only role listing API: `GET /api/roles`
+- authenticated profile APIs: `GET /api/me`, `PUT /api/me`
 - BCrypt password hashing
 - JWT access token generation and validation
 - stateless Spring Security with JWT filter
@@ -148,6 +151,5 @@ Sprint 3 extends backend auth/account lifecycle:
 
 Intentionally not implemented yet:
 
-- user management admin APIs beyond auth core
 - frontend auth screens and feature UI
 - payment, multi-tenancy, notifications, file upload, and other advanced product features

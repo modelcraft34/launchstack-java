@@ -113,6 +113,57 @@ curl http://localhost:8080/api/auth/me \
   -H "Authorization: ******"
 ```
 
+## Test admin user-management endpoints locally
+
+1. Ensure you have an admin user (seed with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`, or use an existing admin).
+2. Login and capture the access token:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@launchstack.local","password":"Password123!"}'
+```
+
+3. Call admin endpoints:
+
+```bash
+curl "http://localhost:8080/api/users?page=0&size=10&sortBy=createdAt&sortDirection=desc" \
+  -H "Authorization: ******"
+
+curl http://localhost:8080/api/users/1 \
+  -H "Authorization: ******"
+
+curl -X POST http://localhost:8080/api/users \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"managed.user@launchstack.dev","firstName":"Managed","lastName":"User","password":"AdminSetPass123!","roles":["ROLE_USER"],"enabled":true}'
+
+curl -X PUT http://localhost:8080/api/users/1 \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{"firstName":"Updated","lastName":"Name","roles":["ROLE_ADMIN","ROLE_USER"],"enabled":true}'
+
+curl -X PATCH http://localhost:8080/api/users/1/status \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled":false}'
+
+curl http://localhost:8080/api/roles \
+  -H "Authorization: ******"
+```
+
+## Test `/api/me` locally
+
+```bash
+curl http://localhost:8080/api/me \
+  -H "Authorization: ******"
+
+curl -X PUT http://localhost:8080/api/me \
+  -H "Authorization: ******" \
+  -H "Content-Type: application/json" \
+  -d '{"firstName":"Local","lastName":"Updated"}'
+```
+
 ## What remains unchanged
 
 - `backend/src/main/resources/application.yml` stays PostgreSQL / Docker oriented
