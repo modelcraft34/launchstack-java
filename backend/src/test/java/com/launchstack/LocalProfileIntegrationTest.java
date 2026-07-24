@@ -8,9 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.launchstack.auth.token.EmailVerificationToken;
+import com.launchstack.auth.token.EmailVerificationTokenRepository;
 import com.launchstack.auth.token.RefreshTokenRepository;
 import com.launchstack.user.entity.User;
 import com.launchstack.user.repository.UserRepository;
+import java.util.Comparator;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,11 +53,15 @@ class LocalProfileIntegrationTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
+
+    @Autowired
     private TestRestTemplate restTemplate;
 
     @BeforeEach
     void setUp() {
         refreshTokenRepository.deleteAll();
+        emailVerificationTokenRepository.deleteAll();
         userRepository.findByEmail("local-user@launchstack.dev").ifPresent(userRepository::delete);
     }
 
@@ -80,8 +87,17 @@ class LocalProfileIntegrationTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andReturn();
 
-        JsonNode registerBody = objectMapper.readTree(registerResult.getResponse().getContentAsString());
-        String refreshToken = registerBody.path("data").path("refreshToken").asText();
+        User registeredUser = userRepository.findByEmail("local-user@launchstack.dev").orElseThrow();
+        EmailVerificationToken verificationToken = emailVerificationTokenRepository.findAllByUserId(registeredUser.getId())
+                .stream()
+                .max(Comparator.comparing(EmailVerificationToken::getCreatedAt))
+                .orElseThrow();
+
+        mockMvc.perform(post("/api/auth/verify-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of("token", verificationToken.getToken()))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
 
         MvcResult loginResult = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,6 +110,7 @@ class LocalProfileIntegrationTest {
 
         JsonNode loginBody = objectMapper.readTree(loginResult.getResponse().getContentAsString());
         String accessToken = loginBody.path("data").path("accessToken").asText();
+        String refreshToken = loginBody.path("data").path("refreshToken").asText();
 
         mockMvc.perform(get("/api/auth/me")
                         .header("Authorization", "Bearer " + accessToken))

@@ -63,14 +63,14 @@ The `local` profile uses H2 in PostgreSQL compatibility mode so the shared Flywa
 
 - Flyway remains enabled for the default PostgreSQL profile.
 - Flyway also runs in the `local` profile against H2.
-- Existing migrations `V1__baseline.sql` and `V2__auth_core.sql` are shared across both profiles; H2 runs them via PostgreSQL compatibility mode.
+- Existing migrations `V1__baseline.sql`, `V2__auth_core.sql`, and `V3__email_verification_and_password_reset.sql` are shared across both profiles; H2 runs them via PostgreSQL compatibility mode.
 
 ## Seed admin user
 
 - Seed roles/admin support still uses `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`.
 - The seed runner is idempotent and works in both the default PostgreSQL profile and the `local` H2 profile.
 
-## Test auth endpoints locally
+## Test auth/account endpoints locally
 
 Example curl flow against the `local` profile:
 
@@ -78,6 +78,15 @@ Example curl flow against the `local` profile:
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"local-user@launchstack.dev","password":"Password123!","firstName":"Local","lastName":"Tester"}'
+
+# read verification token from backend logs (LoggingEmailService) if needed
+curl -X POST http://localhost:8080/api/auth/resend-verification \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local-user@launchstack.dev"}'
+
+curl -X POST http://localhost:8080/api/auth/verify-email \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<verification-token-from-logs>"}'
 
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
@@ -91,6 +100,15 @@ curl -X POST http://localhost:8080/api/auth/logout \
   -H "Content-Type: application/json" \
   -d '{"refreshToken":"<refresh-token>"}'
 
+curl -X POST http://localhost:8080/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local-user@launchstack.dev"}'
+
+# read reset token from backend logs (LoggingEmailService)
+curl -X POST http://localhost:8080/api/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<reset-token-from-logs>","newPassword":"NewPassword123!"}'
+
 curl http://localhost:8080/api/auth/me \
   -H "Authorization: ******"
 ```
@@ -99,5 +117,4 @@ curl http://localhost:8080/api/auth/me \
 
 - `backend/src/main/resources/application.yml` stays PostgreSQL / Docker oriented
 - the `local` profile exists only for local developer convenience
-- no Sprint 3 work is started here
-- no new product features are introduced beyond local developer runtime support
+- local/dev email delivery is log-based in Sprint 3 (no SMTP required)
