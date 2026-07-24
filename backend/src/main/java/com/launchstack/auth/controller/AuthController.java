@@ -1,11 +1,15 @@
 package com.launchstack.auth.controller;
 
 import com.launchstack.auth.dto.CurrentUserResponse;
+import com.launchstack.auth.dto.ForgotPasswordRequest;
 import com.launchstack.auth.dto.LoginRequest;
 import com.launchstack.auth.dto.LogoutRequest;
 import com.launchstack.auth.dto.RefreshTokenRequest;
 import com.launchstack.auth.dto.RegisterRequest;
+import com.launchstack.auth.dto.ResendVerificationRequest;
+import com.launchstack.auth.dto.ResetPasswordRequest;
 import com.launchstack.auth.dto.TokenResponse;
+import com.launchstack.auth.dto.VerifyEmailRequest;
 import com.launchstack.auth.security.AuthenticatedUserPrincipal;
 import com.launchstack.auth.service.AuthService;
 import com.launchstack.common.response.ApiResponse;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private static final String SAFE_EMAIL_RESPONSE = "If the account exists, the requested email has been sent.";
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -31,10 +37,22 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<TokenResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        TokenResponse tokenResponse = authService.register(request);
+    public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody RegisterRequest request) {
+        authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("User registered successfully.", tokenResponse));
+                .body(ApiResponse.success("Registration successful. Please verify your email address.", null));
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        authService.verifyEmail(request);
+        return ResponseEntity.ok(ApiResponse.success("Email verified successfully.", null));
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<ApiResponse<Void>> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        authService.resendVerification(request);
+        return ResponseEntity.ok(ApiResponse.success(SAFE_EMAIL_RESPONSE, null));
     }
 
     @PostMapping("/login")
@@ -53,6 +71,18 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(@Valid @RequestBody LogoutRequest request) {
         authService.logout(request);
         return ResponseEntity.ok(ApiResponse.success("Logout successful.", null));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(SAFE_EMAIL_RESPONSE, null));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success("Password reset successfully.", null));
     }
 
     @SecurityRequirement(name = "bearerAuth")

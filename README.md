@@ -70,6 +70,8 @@ Backend defaults:
 - `local` profile switches to in-memory H2 for Docker-free local development
 - Flyway is enabled in both the default and `local` profiles
 - auth token settings come from `JWT_SECRET`, `JWT_ACCESS_TOKEN_EXPIRATION`, `JWT_REFRESH_TOKEN_EXPIRATION`
+- account lifecycle token settings come from `EMAIL_VERIFICATION_TOKEN_EXPIRATION` and `PASSWORD_RESET_TOKEN_EXPIRATION`
+- frontend/app link generation uses `APP_BASE_URL`
 - optional local admin seed uses `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`
 - Swagger UI is exposed at `http://localhost:8080/swagger-ui.html`
 - H2 Console is exposed at `http://localhost:8080/h2-console` when the `local` profile is active
@@ -88,6 +90,15 @@ curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"local-user@launchstack.dev","password":"Password123!","firstName":"Local","lastName":"Tester"}'
 
+curl -X POST http://localhost:8080/api/auth/resend-verification \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local-user@launchstack.dev"}'
+
+# copy token from backend logs (LoggingEmailService) and verify
+curl -X POST http://localhost:8080/api/auth/verify-email \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<verification-token>"}'
+
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"local-user@launchstack.dev","password":"Password123!"}'
@@ -99,6 +110,15 @@ curl -X POST http://localhost:8080/api/auth/refresh \
 curl -X POST http://localhost:8080/api/auth/logout \
   -H "Content-Type: application/json" \
   -d '{"refreshToken":"<refresh-token>"}'
+
+curl -X POST http://localhost:8080/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email":"local-user@launchstack.dev"}'
+
+# copy token from backend logs (LoggingEmailService) and reset password
+curl -X POST http://localhost:8080/api/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<password-reset-token>","newPassword":"NewPassword123!"}'
 
 curl http://localhost:8080/api/auth/me \
   -H "Authorization: ******"
@@ -115,25 +135,19 @@ npm run build
 
 ## Status
 
-Sprint 2 adds backend auth core:
+Sprint 3 extends backend auth/account lifecycle:
 
 - user, role, and refresh token persistence
 - register, login, refresh, logout, and `/api/auth/me` endpoints
+- `/api/auth/verify-email`, `/api/auth/resend-verification`, `/api/auth/forgot-password`, `/api/auth/reset-password`
 - BCrypt password hashing
 - JWT access token generation and validation
 - stateless Spring Security with JWT filter
 - idempotent seed roles/admin support via environment variables
-
-Developer-experience update before Sprint 3:
-
-- default `application.yml` remains PostgreSQL-first
-- new `local` profile uses H2 in PostgreSQL compatibility mode
-- H2 console is enabled only in the `local` profile for IntelliJ / CLI local testing
+- local/dev email delivery abstraction with log-based email output (verification + reset links/tokens)
 
 Intentionally not implemented yet:
 
-- email verification
-- forgot/reset password
 - user management admin APIs beyond auth core
 - frontend auth screens and feature UI
 - payment, multi-tenancy, notifications, file upload, and other advanced product features
