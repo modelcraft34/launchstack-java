@@ -8,23 +8,6 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
   selector: 'app-dashboard-layout',
   standalone: true,
   imports: [NavbarComponent, RouterOutlet, SidebarComponent],
-  styles: [`
-    .shell {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .content {
-      display: flex;
-      flex: 1;
-    }
-
-    main {
-      flex: 1;
-      padding: 2rem;
-    }
-  `],
   template: `
     <div class="shell">
       <app-navbar></app-navbar>
