@@ -164,8 +164,47 @@ curl -X PUT http://localhost:8080/api/me \
   -d '{"firstName":"Local","lastName":"Updated"}'
 ```
 
+## Run frontend with backend locally
+
+1. Start backend (`local` profile is recommended for Docker-free development):
+
+  ```bash
+  cd backend
+  mvn spring-boot:run -Dspring-boot.run.profiles=local
+  ```
+
+2. Start Angular frontend in a second terminal:
+
+  ```bash
+  cd frontend
+  npm install
+  npm run start
+  ```
+
+3. Open `http://localhost:4200`.
+
+Frontend currently includes Sprint 5/6 auth and layout routes:
+
+- Public: `/auth/login`, `/auth/register`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/forgot-password`, `/auth/reset-password`
+- Protected (requires login): `/dashboard`, `/users`, `/users/:id`, `/profile`
+
+## End-to-end UI test: register -> verify -> login
+
+1. Open `/auth/register`, create a new user.
+2. Check backend logs (`LoggingEmailService`) and copy verification token from the logged verification link.
+3. Open `/auth/verify-email?token=<token>`.
+4. Open `/auth/login` and sign in.
+
+## End-to-end UI test: forgot -> reset password
+
+1. Open `/auth/forgot-password` and submit an email.
+2. Check backend logs (`LoggingEmailService`) and copy reset token from the logged reset link.
+3. Open `/auth/reset-password?token=<token>` and set a new password.
+4. Return to `/auth/login` and sign in with the new password.
+
 ## What remains unchanged
 
 - `backend/src/main/resources/application.yml` stays PostgreSQL / Docker oriented
 - the `local` profile exists only for local developer convenience
 - local/dev email delivery is log-based in Sprint 3 (no SMTP required)
+- user management UI screens are intentionally deferred to Sprint 7

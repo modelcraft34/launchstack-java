@@ -1,31 +1,33 @@
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink],
-  styles: [`
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      background: #111827;
-      color: #f9fafb;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-      font-weight: 600;
-    }
-  `],
+  imports: [AsyncPipe, NgIf, RouterLink],
   template: `
-    <nav>
-      <a routerLink="/dashboard">LaunchStack Java</a>
-      <span>Sprint 0 placeholder</span>
+    <nav class="top-nav">
+      <a routerLink="/dashboard" class="brand">LaunchStack Java</a>
+
+      <div class="nav-actions">
+        <span *ngIf="(authService.currentUser$ | async) as user">{{ user.firstName }} {{ user.lastName }}</span>
+        <button type="button" (click)="logout()">Logout</button>
+      </div>
     </nav>
   `
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+  constructor(
+    public readonly authService: AuthService,
+    private readonly router: Router
+  ) {}
+
+  logout(): void {
+    this.authService.logout().subscribe(() => {
+      void this.router.navigate(['/auth/login']);
+    });
+  }
+}

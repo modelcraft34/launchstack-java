@@ -122,3 +122,24 @@ Sprint 4 adds a profile-focused endpoint pair alongside `/api/auth/me`:
 
 `/api/auth/me` remains available for backward compatibility with previous sprint behavior.
 Users cannot change their own roles, enabled flag, or lock status through `/api/me`.
+
+## Frontend auth routes (Sprint 6)
+
+Angular routes wired to backend auth/account APIs:
+
+- `/auth/login`
+- `/auth/register`
+- `/auth/verify-email?token=...`
+- `/auth/resend-verification`
+- `/auth/forgot-password`
+- `/auth/reset-password?token=...`
+
+Behavior summary:
+
+- Successful login stores access/refresh tokens in `localStorage` and redirects to `/dashboard`.
+- Register does not auto-login; verification is required first.
+- Resend verification and forgot-password screens always show generic safe responses.
+- Reset/verify screens show friendly errors when token query param is missing or invalid/expired.
+- Logout calls backend `/api/auth/logout` when a refresh token exists, then clears local tokens and redirects to `/auth/login`.
+
+User management UI is intentionally not implemented here and is planned for Sprint 7.

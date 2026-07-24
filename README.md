@@ -9,7 +9,7 @@ LaunchStack Java is a production-oriented Spring Boot + Angular SaaS/Admin Start
 ## Repository Layout
 
 - `/backend` - Spring Boot 3 / Java 17 / Maven backend foundation
-- `/frontend` - Angular placeholder application structure
+- `/frontend` - Angular admin frontend foundation and auth screens
 - `/docs` - product and implementation guides to expand in later sprints
 - `/docker-compose.yml` - local development orchestration skeleton
 - `/.env.example` - environment variable template for local setup
@@ -30,7 +30,7 @@ LaunchStack Java is a production-oriented Spring Boot + Angular SaaS/Admin Start
 3. Flyway runs automatically in both profiles.
 4. Open Swagger UI locally once the backend is running.
 
-See `docs/getting-started.md` for the backend setup details.
+See `docs/getting-started.md` for backend + frontend local setup details.
 
 ## Commands
 
@@ -133,6 +133,15 @@ npm run start
 npm run build
 ```
 
+Frontend auth routes:
+
+- `/auth/login`
+- `/auth/register`
+- `/auth/verify-email?token=...`
+- `/auth/resend-verification`
+- `/auth/forgot-password`
+- `/auth/reset-password?token=...`
+
 ## Status
 
 Sprint 4 extends backend authorization and user management:
@@ -151,5 +160,5 @@ Sprint 4 extends backend authorization and user management:
 
 Intentionally not implemented yet:
 
-- frontend auth screens and feature UI
+- Sprint 7 user management UI (`/users` list/detail/create/edit screens)
 - payment, multi-tenancy, notifications, file upload, and other advanced product features
