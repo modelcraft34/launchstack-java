@@ -39,7 +39,11 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
           <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
         </label>
         <p class="field-error" *ngIf="isInvalid('confirmPassword')">Confirm password is required.</p>
-        <p class="field-error" *ngIf="form.errors?.['passwordMismatch'] && form.touched">Passwords do not match.</p>
+        <p
+          class="field-error"
+          *ngIf="form.errors?.['passwordMismatch'] && (form.controls.newPassword.touched || form.controls.confirmPassword.touched)">
+          Passwords do not match.
+        </p>
 
         <p class="form-success" *ngIf="successMessage">{{ successMessage }}</p>
         <p class="form-error" *ngIf="errorMessage">{{ errorMessage }}</p>

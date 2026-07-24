@@ -8,7 +8,6 @@ import { AuthService } from '../../core/services/auth.service';
   selector: 'app-navbar',
   standalone: true,
   imports: [AsyncPipe, NgIf, RouterLink],
-  styles: [``],
   template: `
     <nav class="top-nav">
       <a routerLink="/dashboard" class="brand">LaunchStack Java</a>
